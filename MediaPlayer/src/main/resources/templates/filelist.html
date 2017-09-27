@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<title>上传、下载及播放</title>
+<style type="text/css">
+	div.diy{
+		position: relative;
+  		left: 40px;
+  		float: left;
+
+	}
+	div.online {
+		float: left;
+		margin-left: 100px;
+	}
+	
+
+
+</style>
+</head>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+<script type="text/javascript">
+	
+		function play(fileName){
+			var filename=fileName.substring(fileName.lastIndexOf(".")+1);
+			var content="";
+			if(filename.toLowerCase()=="mp4"){
+					content+='<video src= "upload/'+fileName+'" width="320" height="240" controls="controls"></video>';
+			}
+			if(filename.toLowerCase()=="mp3"){
+				content+='<audio src= "upload/'+fileName+'" width="320" height="240" controls="controls"></audio>';
+			}
+			$('video').remove();
+			$('audio').remove(); 
+			$('#player').attr("hidden",false); 
+			$('#player').append(content);
+		}
+		function onFileChange(){
+			   var file = document.getElementById('file').files[0];  
+			   var url = URL.createObjectURL(file);    
+			   var content = "";
+			   content+='<audio src= "'+url+'" width="320" height="240" controls="controls"></audio>';
+			   $('audio').remove();
+				$('.online').append(content);
+		}
+		
+
+</script>
+
+<body>
+ <h2>上传</h2>
+  <form method="POST" enctype="multipart/form-data" action="/uploadfile">
+    <p>
+      文件：<input type="file" name="file" />
+    </p>
+    <p>
+      &nbsp;&nbsp;&nbsp;<input type="submit" value="上传" />
+    </p>
+  </form>
+   <hr/>
+   <h2>下载、播放</h2>
+  <div class="diy">
+	<table class="diy">  
+              <tr>
+                <th>文件名</th>  
+                <th>下载</th>   
+                <th>播放</th>
+              </tr>  
+    <tr th:each="fileName:${list}">
+    	<td th:text="${fileName}"></td>
+    	<td><a th:href="@{'/down?fileName='+${fileName}}">下载</a></td>
+		<td><input id="play" type="button" value="播放" th:onclick="'javascript:play('+'\''+${fileName}+'\''+')'"/></td>
+    </tr>
+	</table>
+	</div>
+	<div class="online">
+	<h2>选择音频文件后直接在线播放</h2>
+	<input type="file" id="file" onchange="onFileChange()"/>  
+	</div>
+	<div id="player" style="width: 550px;height: 350px" hidden="true" class="play"></div>
+</body>
+</html>
